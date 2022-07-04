@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "this_s3_bucket" {
 }
 
 resource "random_password" "this_s3_password" {
-  length = 16
+  length  = 16
   special = true
 }
 
@@ -46,22 +46,22 @@ resource "aws_cloudfront_distribution" "this_static_site_distribution" {
     origin_id   = local.s3_origin_id
 
     custom_header {
-      name = "User-Agent"
+      name  = "User-Agent"
       value = random_password.this_s3_password.result
     }
 
     custom_origin_config {
-      http_port = 80
-      https_port = 443
-      origin_protocol_policy = "http-only"
-      origin_ssl_protocols = ["TLSv1.2"]
+      http_port                = 80
+      https_port               = 443
+      origin_protocol_policy   = "http-only"
+      origin_ssl_protocols     = ["TLSv1.2"]
       origin_keepalive_timeout = 5
-      origin_read_timeout = 30
+      origin_read_timeout      = 30
     }
   }
 
-  enabled             = true
-  is_ipv6_enabled     = true
+  enabled         = true
+  is_ipv6_enabled = true
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
