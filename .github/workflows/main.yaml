@@ -1,0 +1,41 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  deploy:
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: marceloprado/has-changed-path@master
+        id: changed-terraform
+        with:
+          paths: terraform/
+
+      - name: Terraform Deploy
+        if: steps.changed-terraform.outputs.changed == 'true'
+        id: terraform-deploy
+        uses: ./.github/actions/terraform_deploy
+        env:
+          TF_VAR_aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
+          TF_VAR_aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}

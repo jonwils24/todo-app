@@ -1,0 +1,5 @@
+name: 'Terraform Apply'
+description: 'Run Terraform Apply'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
