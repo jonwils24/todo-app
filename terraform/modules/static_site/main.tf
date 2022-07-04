@@ -44,7 +44,7 @@ POLICY
 }
 
 locals {
-  s3_origin_id = "S3-Website-${aws_s3_bucket.this_s3_bucket.website_endpoint}"
+  s3_origin_id = "S3-Website-${aws_s3_bucket_website_configuration.this_s3_bucket_website_config.website_endpoint}"
 }
 
 resource "aws_cloudfront_distribution" "this_static_site_distribution" {
