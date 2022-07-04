@@ -1,9 +1,16 @@
 resource "aws_s3_bucket" "this_s3_bucket" {
   bucket_prefix = var.bucket_name
+}
 
-  website {
-    index_document = "index.html"
-    error_document = "error.html"
+resource "aws_s3_bucket_website_configuration" "this_s3_bucket_website_config" {
+  bucket = aws_s3_bucket.this_s3_bucket.bucket
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
   }
 }
 
