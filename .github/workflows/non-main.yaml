@@ -27,7 +27,6 @@ jobs:
           fetch-depth: 0
 
       - name: Terraform Plan
-        if: steps.changed-terraform.outputs.changed == 'true'
         id: terraform-plan
         uses: ./.github/actions/terraform_plan
         env:
