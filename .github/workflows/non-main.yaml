@@ -26,7 +26,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: marceloprado/has-changed-path@master
+        id: changed-terraform
+        with:
+          paths: terraform/
+
       - name: Terraform Plan
+        if: steps.changed-terraform.outputs.changed == 'true'
         id: terraform-plan
         uses: ./.github/actions/terraform_plan
         env:
