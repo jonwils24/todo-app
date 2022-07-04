@@ -33,6 +33,11 @@ jobs:
         with:
           paths: terraform/
 
+      - uses: marceloprado/has-changed-path@master
+        id: changed-site
+        with:
+          paths: site/
+
       - name: Terraform Deploy
         if: github.event.pull_request.merged == true && steps.changed-terraform.outputs.changed == 'true'
         id: terraform-deploy
@@ -40,3 +45,24 @@ jobs:
         env:
           TF_VAR_aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
           TF_VAR_aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+
+      - uses: gliech/create-github-secret-action@v1
+        if: steps.changed-terraform.outputs.changed == 'true'
+        with:
+          name: WEBSITE_BUCKET_NAME
+          value: ${{ steps.terraform-deploy.outputs.BUCKET }}
+          pa_token: ${{ secrets.PA_TOKEN }}
+
+      - uses: gliech/create-github-secret-action@v1
+        if: steps.changed-terraform.outputs.changed == 'true'
+        with:
+          name: DISTRIBUTION_ID
+          value: ${{ steps.terraform-deploy.outputs.DISTRIBUTION_ID }}
+          pa_token: ${{ secrets.PA_TOKEN }}
+
+      - name: S3 Sync
+        if: steps.changed-site.outputs.changed == 'true'
+        uses: ./.github/actions/s3_sync
+        env:
+          BUCKET_NAME: ${{ secrets.WEBSITE_BUCKET_NAME }}
+          DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_ID }}
