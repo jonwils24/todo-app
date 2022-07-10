@@ -1,11 +1,11 @@
 locals {
-  name = "todo-app"
+  name = var.name
 }
 
-##### API Gateway #####
+####################### API Gateway #######################
 
 resource "aws_apigatewayv2_api" "this_api" {
-  name          = "jw-test-todo-http-api"
+  name          = "${local.name}-http-api"
   protocol_type = "HTTP"
   cors_configuration {
     allow_headers = ["*"]
@@ -19,7 +19,7 @@ resource "aws_apigatewayv2_integration" "this_api_integration" {
   integration_type = "AWS_PROXY"
 
   integration_method = "ANY"
-  integration_uri    = module.this_lambda_function.lambda_function_arn #aws_lambda_function.this_lambda_function.arn #"arn:aws:lambda:us-east-1:899082485543:function:jw-tf-test-todo"
+  integration_uri    = module.this_lambda_function.lambda_function_arn
 }
 
 resource "aws_apigatewayv2_route" "this_api_route_any_proxy" {
@@ -42,7 +42,7 @@ resource "aws_apigatewayv2_stage" "this_api_stage" {
   auto_deploy = true
 
   access_log_settings {
-    destination_arn = "arn:aws:logs:us-east-1:899082485543:log-group:test_api_gateway"
+    destination_arn = aws_cloudwatch_log_group.this_api_stage_log_group.arn
     format = jsonencode(
         {
           httpMethod     = "$context.httpMethod"
@@ -58,48 +58,11 @@ resource "aws_apigatewayv2_stage" "this_api_stage" {
   }
 }
 
-##### Lambda #####
-# locals {
-#   source_file = "${path.module}/lambdas/lambda_function.py"
-# }
+resource "aws_cloudwatch_log_group" "this_api_stage_log_group" {
+  name = "${local.name}"
+}
 
-# resource "random_string" "tmpfile" {
-#   length = 16
-#   special = false
-
-#   keepers = {
-#     source_file = data.local_file.src.content
-#   }
-# }
-
-# data "local_file" "src" {
-#   filename = local.source_file
-# }
-
-# resource "null_resource" "dozip" {
-#   triggers = {
-#     template_rendered = random_string.tmpfile.keepers.source_file
-#   }
-
-#   provisioner "local-exec" {
-#     command = "zip -j /tmp/${random_string.tmpfile.result}.zip ${local.source_file}"
-#   }
-# }
-
-# resource "aws_lambda_function" "this_lambda_function" {
-#   # If the file is not in the current working directory you will need to include a 
-#   # path.module in the filename.
-#   filename      = "/tmp/${random_string.tmpfile.result}.zip"
-#   function_name = "${local.name}-lambda"
-#   role          = aws_iam_role.this_iam_role_for_lambda.arn
-#   handler       = "lambda_function.lambda_handler"
-#   runtime       = "python3.9"
-#   environment {
-#     variables = {
-#       "DYNAMO_TABLE_NAME" = aws_dynamodb_table.this_dynamodb_table.name
-#     }
-#   }
-# }
+####################### Lambda #######################
 
 module "this_lambda_function" {
   source  = "terraform-aws-modules/lambda/aws"
@@ -124,7 +87,7 @@ module "this_lambda_function" {
 resource "aws_lambda_permission" "this_lambda_permission" {
   statement_id  = "AllowTodoAPIInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = module.this_lambda_function.lambda_function_name #aws_lambda_function.this_lambda_function.function_name
+  function_name = module.this_lambda_function.lambda_function_name
   principal     = "apigateway.amazonaws.com"
 
   # The /*/*/* part allows invocation from any stage, method and resource path
@@ -183,7 +146,7 @@ resource "aws_iam_role_policy_attachment" "this_lambda_dynamodb" {
   policy_arn = aws_iam_policy.this_lambda_dynamodb_policy.arn
 }
 
-##### DynamoDB #####
+####################### DynamoDB #######################
 
 resource "aws_dynamodb_table" "this_dynamodb_table" {
   name           = "${local.name}-table"
@@ -195,4 +158,3 @@ resource "aws_dynamodb_table" "this_dynamodb_table" {
     type = "S"
   }
 }
-
