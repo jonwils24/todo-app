@@ -59,7 +59,7 @@ resource "aws_apigatewayv2_stage" "this_api_stage" {
 }
 
 resource "aws_cloudwatch_log_group" "this_api_stage_log_group" {
-  name = "${local.name}"
+  name = local.name
 }
 
 ####################### Lambda #######################
