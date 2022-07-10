@@ -74,6 +74,8 @@ resource "aws_cloudfront_distribution" "this_static_site_distribution" {
   enabled         = true
   is_ipv6_enabled = true
 
+  aliases = ["wilsonwjonathan.com"]
+
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
