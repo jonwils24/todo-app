@@ -1,4 +1,4 @@
-// Release v0.0.4
+// Release v0.0.5
 
 const { createApp } = Vue
 
