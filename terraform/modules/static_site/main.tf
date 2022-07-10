@@ -47,7 +47,7 @@ locals {
   s3_origin_id = "S3-Website-${aws_s3_bucket_website_configuration.this_s3_bucket_website_config.website_endpoint}"
 }
 
-data "aws_acm_certificate" "issued" {
+data "aws_acm_certificate" "this_certificate" {
   domain = "wilsonwjonathan.com"
 }
 
