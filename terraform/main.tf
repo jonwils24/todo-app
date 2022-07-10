@@ -1,4 +1,4 @@
-# Release v0.0.4
+# Release v0.0.5
 
 provider "aws" {
   region     = var.region
