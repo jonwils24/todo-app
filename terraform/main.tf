@@ -1,3 +1,5 @@
+# TF Release v0.0.1
+
 provider "aws" {
   region     = var.region
   access_key = var.aws_access_key
