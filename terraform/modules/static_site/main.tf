@@ -48,7 +48,7 @@ locals {
 }
 
 data "aws_acm_certificate" "issued" {
-  domain_name       = "wilsonwjonathan.com"
+  domain = "wilsonwjonathan.com"
 }
 
 resource "aws_cloudfront_distribution" "this_static_site_distribution" {
