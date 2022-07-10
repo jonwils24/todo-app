@@ -47,8 +47,8 @@ locals {
   s3_origin_id = "S3-Website-${aws_s3_bucket_website_configuration.this_s3_bucket_website_config.website_endpoint}"
 }
 
-data "aws_acm_certificate" "issued" {
-  domain_name       = "wilsonwjonathan.com"
+data "aws_acm_certificate" "this_certificate" {
+  domain = "wilsonwjonathan.com"
 }
 
 resource "aws_cloudfront_distribution" "this_static_site_distribution" {
@@ -100,7 +100,7 @@ resource "aws_cloudfront_distribution" "this_static_site_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.this_certificate.arn
-    ssl_support_method= "sni-only"
+    acm_certificate_arn = data.aws_acm_certificate.this_certificate.arn
+    ssl_support_method  = "sni-only"
   }
 }

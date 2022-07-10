@@ -37,40 +37,40 @@ resource "aws_apigatewayv2_route" "this_api_route_any" {
 }
 
 resource "aws_apigatewayv2_stage" "this_api_stage" {
-  api_id = aws_apigatewayv2_api.this_api.id
-  name   = "default"
+  api_id      = aws_apigatewayv2_api.this_api.id
+  name        = "default"
   auto_deploy = true
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.this_api_stage_log_group.arn
     format = jsonencode(
-        {
-          httpMethod     = "$context.httpMethod"
-          ip             = "$context.identity.sourceIp"
-          protocol       = "$context.protocol"
-          requestId      = "$context.requestId"
-          requestTime    = "$context.requestTime"
-          responseLength = "$context.responseLength"
-          routeKey       = "$context.routeKey"
-          status         = "$context.status"
-        }
-      )
+      {
+        httpMethod     = "$context.httpMethod"
+        ip             = "$context.identity.sourceIp"
+        protocol       = "$context.protocol"
+        requestId      = "$context.requestId"
+        requestTime    = "$context.requestTime"
+        responseLength = "$context.responseLength"
+        routeKey       = "$context.routeKey"
+        status         = "$context.status"
+      }
+    )
   }
 }
 
 resource "aws_cloudwatch_log_group" "this_api_stage_log_group" {
-  name = "${local.name}"
+  name = local.name
 }
 
 ####################### Lambda #######################
 
 module "this_lambda_function" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source        = "terraform-aws-modules/lambda/aws"
   function_name = "${local.name}-lambda"
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.6"
-  lambda_role = aws_iam_role.this_iam_role_for_lambda.arn
-  create_role = false
+  lambda_role   = aws_iam_role.this_iam_role_for_lambda.arn
+  create_role   = false
 
   source_path = [
     "${path.module}/lambdas",
@@ -149,9 +149,9 @@ resource "aws_iam_role_policy_attachment" "this_lambda_dynamodb" {
 ####################### DynamoDB #######################
 
 resource "aws_dynamodb_table" "this_dynamodb_table" {
-  name           = "${local.name}-table"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "id"
+  name         = "${local.name}-table"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
 
   attribute {
     name = "id"
