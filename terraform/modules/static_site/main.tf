@@ -101,6 +101,6 @@ resource "aws_cloudfront_distribution" "this_static_site_distribution" {
 
   viewer_certificate {
     acm_certificate_arn = data.aws_acm_certificate.this_certificate.arn
-    ssl_support_method= "sni-only"
+    ssl_support_method  = "sni-only"
   }
 }

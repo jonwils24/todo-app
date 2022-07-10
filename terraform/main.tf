@@ -15,7 +15,5 @@ module "static_site" {
 
 module "todos_api" {
   source = "./modules/api"
-  name = local.name
+  name   = local.name
 }
-
-# Trigger TF run
