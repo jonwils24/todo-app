@@ -1,4 +1,4 @@
-# TF Release v0.0.3
+# Release v0.0.4
 
 provider "aws" {
   region     = var.region
